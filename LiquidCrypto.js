@@ -25,20 +25,21 @@ const LiquidCrypto = (keypair) => {
 
 	const ivLength = 12
 	const encrypt = (data, key) => {
-		// using a base64 IV, which is 6 bytes per character
-		const iv = crypto.randomBytes(ivLength * 6).toString('base64').slice(0, ivLength)
-
+		const iv = crypto.randomBytes(ivLength).toString('base64').slice(0, ivLength)
+		console.log('iv: ', iv)
+		console.log('iv len: ', iv.length)
 		const cipher = crypto.createCipheriv(
 			'aes-256-gcm',
 			key,
 			iv
 		)
 
-		return `${iv.toString('hex')}${cipher.update(data).toString('hex')}${cipher.final().toString('hex')}`
+		return `${iv.toString('base64')}${cipher.update(data).toString('base64')}${cipher.final().toString('base64')}`
 	}
 
 	const decrypt = (data, key) => {
 		const iv = data.slice(0, ivLength)
+		console.log('d-iv: ', iv)
 		const encryptedData = data.slice(ivLength)
 
 		const decipher = crypto.createDecipheriv(
@@ -47,7 +48,7 @@ const LiquidCrypto = (keypair) => {
 			iv
 		)
 
-		return decipher.update(encryptedData, 'hex', 'utf8')
+		return decipher.update(encryptedData, 'base64', 'utf8')
 	}	
 
 	return {

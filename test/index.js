@@ -1,4 +1,4 @@
-const { LiquidCrypto } = require('liquidcrypto-node')
+const { LiquidCrypto } = require('../LiquidCrypto.js')
 
 // EXAMPLE USAGE: COMMUNICATION BETWEEN SERVERS
 const init = async () => {
