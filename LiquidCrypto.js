@@ -2,7 +2,7 @@ const crypto = require('crypto')
 
 const LiquidCrypto = (options={}) => {
 	const { keypair, log } = options
-	const liqLog = () => log ? console.log.apply(null, arguments) : null
+	const liqLog = (...args) => log ? console.log(...args) : null
 	// private method for creating an asymmetric keypair object,
 	// generating its keys, and returning a reference to the object
 	const generateKeys = () => {
