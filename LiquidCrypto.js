@@ -1,7 +1,8 @@
 const crypto = require('crypto')
 
-const LiquidCrypto = (keypair) => {
-
+const LiquidCrypto = (options={}) => {
+	const { keypair, log } = options
+	const liqLog = () => log ? console.log.apply(null, arguments) : null
 	// private method for creating an asymmetric keypair object,
 	// generating its keys, and returning a reference to the object
 	const generateKeys = () => {
@@ -25,30 +26,37 @@ const LiquidCrypto = (keypair) => {
 
 	const ivLength = 12
 	const encrypt = (data, key) => {
+		liqLog('Encrypt data: ', data)
 		const iv = crypto.randomBytes(ivLength).toString('base64').slice(0, ivLength)
-		console.log('iv: ', iv)
-		console.log('iv len: ', iv.length)
+		liqLog('generated iv: ', iv)
 		const cipher = crypto.createCipheriv(
 			'aes-256-gcm',
 			key,
 			iv
 		)
 
-		return `${iv.toString('base64')}${cipher.update(data).toString('base64')}${cipher.final().toString('base64')}`
+		const encrypted = `${cipher.update(data).toString('base64')}${cipher.final().toString('base64')}`
+		liqLog('Encrypted: ', encrypted)
+		const ivEncrypted = `${iv}${encrypted}`
+		liqLog('iv + encrypted: ', ivEncrypted)
+		return ivEncrypted
 	}
 
 	const decrypt = (data, key) => {
+		liqLog('Decrypt data: ', data)
 		const iv = data.slice(0, ivLength)
-		console.log('d-iv: ', iv)
+		liqLog('incoming iv: ', iv)
 		const encryptedData = data.slice(ivLength)
-
+		liqLog('incoming data: ', encryptedData)
 		const decipher = crypto.createDecipheriv(
 			'aes-256-gcm',
 			key,
 			iv
 		)
 
-		return decipher.update(encryptedData, 'base64', 'utf8')
+		const decrypted = decipher.update(encryptedData, 'base64', 'utf8')
+		liqLog('decrypted: ', decrypted)
+		return decrypted
 	}	
 
 	return {
