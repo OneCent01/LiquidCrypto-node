@@ -1,5 +1,26 @@
 const crypto = require('crypto')
 
+const ab2str =  buf => String.fromCharCode.apply(null, new Uint8Array(buf))
+
+const str2ab = str => {
+  const buf = new ArrayBuffer(str.length)
+    bufView = new Uint8Array(buf)
+  let i = str.length
+  while(i--) {
+    bufView[i] = str.charCodeAt(i)
+  }
+  return buf
+}
+
+// const toBuffer =  ab => {
+//     const buf = Buffer.alloc(ab.byteLength)
+//     const view = new Uint8Array(ab)
+//     for (let i = 0; i < buf.length; ++i) {
+//         buf[i] = view[i]
+//     }
+//     return buf
+// }
+
 const LiquidCrypto = (options={}) => {
 	const { keypair, log } = options
 	const liqLog = (...args) => log ? console.log(...args) : null
@@ -50,8 +71,8 @@ const LiquidCrypto = (options={}) => {
 		liqLog('incoming data: ', encryptedData)
 		const decipher = crypto.createDecipheriv(
 			'aes-256-gcm',
-			key,
-			iv
+			str2ab(key),
+			str2ab(iv)
 		)
 
 		const decrypted = decipher.update(encryptedData, 'base64', 'utf8')
